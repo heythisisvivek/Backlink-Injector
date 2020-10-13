@@ -2,21 +2,23 @@
     require_once("./config.php");
 
     // CHECKING COOKIE
-    if(!isset($_COOKIE["backlink"]) AND empty($_COOKIE["backlink"])) {
-        // INITIALIZING COOKIE
-        setcookie("backlink", 0, time() + 60 * 60 * 24 * 14, "/");
-    } else {
+    if(isset($_GET["backlink"]) AND isset($_GET["passwd"])) {
         // GETTING COOKIE
-        $backlink_url = $_COOKIE["backlink"];
-
-        // CHECKING COOKIE IS SET
-        if(!$backlink_url) {
-            $backlink_error = "Backlink Not Set";
-        }
+        $backlink_url = $_GET["backlink"];
+        $backlink_passwd = $_GET["passwd"];
 
         // VALIDATING INPUT
         if(!filter_var($backlink_url, FILTER_VALIDATE_URL)) {
             $backlink_error = "Invalid Input Provided";
+        }
+
+        // VALIDATING INPUT
+        if(!preg_match("/^[a-zA-Z0-9]{2,20}$/", $backlink_passwd)) {
+            $backlink_error = "Invalid Input Provided";
+        }
+
+        if($backlink_passwd != SCRIPTPASS) {
+            $backlink_error = "Invalid Passwd";
         }
 
         // DATABASE INITIALIZATION
@@ -50,10 +52,10 @@
             $stmt  = $mysql->prepare("INSERT INTO backlink (backlink_url, backlink_date, backlink_status) VALUES (?, ?, ?)");
             $stmt->bind_param("ssi", $backlink_url, $backlink_date, $backlink_status);
             $stmt->execute();
+            echo "<script>alert('Link Published')</script>";
             $stmt->close();
             $mysql->close();
         }
     }
-
     echo "Go to Home Page";
 ?>

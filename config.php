@@ -4,4 +4,5 @@
         define("USER", "changeme"); // Database Username
         define("PASSWD", "changeme"); // Database Password
         define("DB", "changeme"); // Database Name
+        define("SCRIPTPASS", "123456") // Script Password
 ?>
